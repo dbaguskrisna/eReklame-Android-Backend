@@ -19,3 +19,5 @@ use App\Http\Controllers\UserController;
 Route::get('/master_kecamatan',[MasterController::class,'index']);
 Route::post('/daftar_user',[UserController::class,'store']);
 Route::post('/login',[UserController::class,'login']);
+Route::post('/read_user',[UserController::class,'readUser']);
+Route::put('/update_password',[UserController::class,'updatePassword']);

@@ -34,7 +34,7 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        $insert = DB::insert('insert into user (nama,alamat,no_hp,username,email,password) values (?, ?, ?, ?, ?, ?)', [$request->input('nama'),$request->input('alamat'),$request->input('noHp'),$request->input('username'),$request->input('email'),$request->input('password'),]);
+        $insert = DB::insert('insert into user (nama,alamat,no_hp,jabatan,nama_perusahaan,alamat_perusahaan,no_telp_perusahaan,npwpd,email,password,username) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [$request->input('nama'),$request->input('alamat'),$request->input('noHp'),$request->input('jabatan'),$request->input('nama_perusahaan'),$request->input('alamat_perusahaan'),$request->input('no_telp_perusahaan'),$request->input('npwpd'),$request->input('email'),$request->input('password'),$request->input('username')]);
 
         return response()->json(['result'=>'success','data'=>$insert]);
     }
@@ -89,4 +89,17 @@ class UserController extends Controller
 
         return response()->json(['result'=>'success','data'=>$userData]);
     }
+
+    public function readUser(Request $request){
+        $user=DB::select(DB::raw("select * from user where username=?"), [$request->input('username')]);
+        return response()->json(['result'=>'success','data'=>$user]);
+    }
+
+    public function updatePassword(Request $request){
+        $data = DB::table('user')
+              ->where('username', $request->input('username'))
+              ->update(['password' => $request->input('password')]);
+        return response()->json(['result'=>'success','data'=> $request->input('username')]);
+    }
+
 }

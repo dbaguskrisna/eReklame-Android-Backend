@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-class MasterController extends Controller
+
+class DetailReklame extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -13,8 +13,7 @@ class MasterController extends Controller
      */
     public function index()
     {
-        $kecamatan=DB::select(DB::raw("select * from master_kecamatan"));
-        return response()->json(['result'=>'success','data'=>$kecamatan]);
+        //
     }
 
     /**
@@ -46,7 +45,7 @@ class MasterController extends Controller
      */
     public function show($id)
     {
-        
+        //
     }
 
     /**
@@ -82,5 +81,4 @@ class MasterController extends Controller
     {
         //
     }
-
 }
