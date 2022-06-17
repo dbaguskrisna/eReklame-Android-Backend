@@ -34,8 +34,8 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        $insert = DB::insert('insert into user (nama,alamat,no_hp,jabatan,nama_perusahaan,alamat_perusahaan,no_telp_perusahaan,npwpd,email,password,username) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [$request->input('nama'),$request->input('alamat'),$request->input('noHp'),$request->input('jabatan'),$request->input('nama_perusahaan'),$request->input('alamat_perusahaan'),$request->input('no_telp_perusahaan'),$request->input('npwpd'),$request->input('email'),$request->input('password'),$request->input('username')]);
-
+        $insert = DB::insert('insert into user (nama,alamat,no_hp,jabatan,nama_perusahaan,alamat_perusahaan,no_telp_perusahaan,npwpd,email,password,username,token) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [$request->input('nama'),$request->input('alamat'),$request->input('noHP'),$request->input('jabatan'),$request->input('nama_perusahaan'),$request->input('alamat_perusahaan'),$request->input('no_telp_perusahaan'),$request->input('npwpd'),$request->input('email'),$request->input('password'),$request->input('username'),$request->input('token')]);
+        
         return response()->json(['result'=>'success','data'=>$insert]);
     }
 
@@ -86,20 +86,76 @@ class UserController extends Controller
 
     public function login(Request $request){
         $userData=DB::select(DB::raw("select * from user where username=? and password=?"), [$request->input('username'),$request->input('password')]);
-
-        return response()->json(['result'=>'success','data'=>$userData]);
+        $data = DB::table('user')->where('username', $request->input('username'))->update(['token' => $request->input('token')]);
+        if($userData == null && $data == null){
+            return response()->json(['result'=>'failed','data'=>$userData]);
+        } else {
+            return response()->json(['result'=>'success','data'=>$userData]);
+        }
     }
 
     public function readUser(Request $request){
         $user=DB::select(DB::raw("select * from user where username=?"), [$request->input('username')]);
-        return response()->json(['result'=>'success','data'=>$user]);
+        if($user == null){
+            return response()->json(['result'=>'failed','data'=>$user]);
+        } else {
+            return response()->json(['result'=>'success','data'=>$user]);
+        }
     }
 
     public function updatePassword(Request $request){
         $data = DB::table('user')
               ->where('username', $request->input('username'))
               ->update(['password' => $request->input('password')]);
-        return response()->json(['result'=>'success','data'=> $request->input('username')]);
+        if($data == null){
+            return response()->json(['result'=>'failed','data'=> $request->input('username')]);
+        } else {
+            return response()->json(['result'=>'success','data'=> $request->input('username')]);
+        }
     }
 
+    public function updateUser(Request $request){
+        $data = DB::table('user')
+              ->where('username', $request->input('username'))
+              ->update(['nama' => $request->input('nama_lengkap'), 'alamat' => $request->input('alamat'),'no_hp' => $request->input('no_hp'),'jabatan' => $request->input('jabatan'),'nama_perusahaan' => $request->input('nama_perusahaan'),'alamat_perusahaan' => $request->input('alamat_perusahaan'),'no_telp_perusahaan' => $request->input('no_telp_perusahaan'),'npwpd' => $request->input('npwpd')]);
+        if($data == null){
+            return response()->json(['result'=>'failed','data'=> $request->input('username')]);
+        } else {
+            return response()->json(['result'=>'success','data'=> $request->input('username')]);
+        }
+    }
+    
+    public function loginPetugas(Request $request){
+        $userData=DB::select(DB::raw("select * from petugas_wastib where username=? and password=?"), [$request->input('username'),$request->input('password')]);
+
+        if($userData == null){
+            return response()->json(['result'=>'failed','data'=>$userData]);
+        } else {
+            return response()->json(['result'=>'success','data'=>$userData]);
+        }
+    }
+
+    public function readPetugasWastib(Request $request){
+        $userData=DB::select(DB::raw("select * from petugas_wastib where username=?"), [$request->input('username')]);
+
+        if($userData == null){
+            return response()->json(['result'=>'failed','data'=>$userData]);
+        } else {
+            return response()->json(['result'=>'success','data'=>$userData]);
+        }
+    }
+
+    public function updatePetugasWastib(Request $request){
+        $data = DB::table('petugas_wastib')
+              ->where('username', $request->input('username'))
+              ->update(['nama_petugas' => $request->input('nama_petugas'), 'alamat' => $request->input('alamat'),'nomor_handphone' => $request->input('no_hp')]);
+
+        if($data == null){
+            return response()->json(['result'=>'failed','data'=>  $data]);
+        } else {
+            return response()->json(['result'=>'success','data'=>  $data]);
+        }
+    }
+
+    
 }

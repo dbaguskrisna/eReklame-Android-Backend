@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\MasterController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\UploadController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -22,3 +23,5 @@ Route::get('/', function () {
 Route::get('/master_kecamatan',[MasterController::class,'index']);
 Route::get('/userCreate',[UserController::class,'create']);
 Route::post('/userCreate',[UserController::class,'store']);
+
+//uploadfile
