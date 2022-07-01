@@ -38,6 +38,9 @@ Route::post('/read_reklame_kurang',[ReklameController::class,'readBerkasKurang']
 Route::post('/read_reklame',[ReklameController::class,'readReklame']);
 Route::post('/read_reklame_detail',[ReklameController::class,'readDetailReklame']);
 Route::post('/read_user',[UserController::class,'readUser']);
+Route::post('/detail_survey_reklame',[ReklameController::class,'detailDataSurvey']);
+Route::post('/read_data_survey',[ReklameController::class,'dataSurvey']);
+Route::post('/show_image_survey',[ReklameController::class,'showImageReklame']);
 
 //Update API
 Route::put('/update_status_reklame',[ReklameController::class,'changeStatus']);
@@ -49,7 +52,9 @@ Route::put('/update_user',[UserController::class,'updateUser']);
 //Delete 
 Route::post('/delete_reklame',[ReklameController::class,'deleteReklame']);
 
+//Upload
 Route::post('/upload_reklame',[UploadController::class,'proses_upload']);
+
 Route::post('/read_upload_reklame',[UploadController::class,'readUploadData']);
 Route::post('/delete_berkas',[UploadController::class,'deleteBerkas']);
 

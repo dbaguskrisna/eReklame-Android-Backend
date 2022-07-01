@@ -204,6 +204,19 @@ class ReklameController extends Controller
 
     public function insertDataSurvey(Request $request)
     {
+        $this->validate($request, [
+            'file' => 'required|file|mimes:jpg,jpeg,png',
+        ]);
+     
+        // menyimpan data file yang diupload ke variabel $file
+        $file = $request->file('file');
+     
+        $nama_file = "reklame_".time()."_".$file->getClientOriginalName();
+
+        // isi dengan nama folder tempat kemana file diupload
+        $tujuan_upload = 'data_file';
+        $file->move($tujuan_upload,$nama_file);
+
         $data = DB::select(DB::raw("select id_reklame from reklame where no_formulir=?"), [$request->input('no_formulir')]);
 
         if ($data == null) {
@@ -212,7 +225,7 @@ class ReklameController extends Controller
             $str = json_encode($data[0]);
             $id_reklame = (int) filter_var($str, FILTER_SANITIZE_NUMBER_INT);
 
-            $insert = DB::insert('insert into data_survey (id_reklame,id_petugas,tanggal_survey,berita_acara) values (?,?,?,?)', [$id_reklame, $request->input('id_petugas'), $request->input('tanggal_survey'), $request->input('berita_acara')]);
+            $insert = DB::insert('insert into data_survey (id_reklame,id_petugas,tanggal_survey,berita_acara,gambar) values (?,?,?,?,?)', [$id_reklame, $request->input('id_petugas'), $request->input('tanggal_survey'), $request->input('berita_acara'), $nama_file]);
 
             if ($insert == null) {
                 return response()->json(['result' => 'failed', 'data' => $insert]);
@@ -372,4 +385,75 @@ class ReklameController extends Controller
         }
     }
 
+    public function detailDataSurvey (Request $request){
+        $data = DB::select(DB::raw("select 
+        user.nama,
+        user.alamat,
+        user.no_hp,
+        user.jabatan,
+        user.nama_perusahaan,
+        user.alamat_perusahaan,
+        user.no_telp_perusahaan,
+        user.npwpd,
+        user.email,
+        user.token,
+        jenis_produk.nama_jenis_produk,
+        jenis_reklame.nama_jenis_reklame,
+        letak_reklame.letak,
+        lokasi_penempatan.lokasi_penempatan,
+        status_tanah.nama_status_tanah,
+        reklame.id_reklame,
+        reklame.id_jenis_reklame,
+        reklame.id_user,
+        reklame.id_jenis_produk,
+        reklame.id_lokasi_penempatan,
+        reklame.id_status_tanah,
+        reklame.id_letak_reklame,
+        reklame.tahun_pendirian,
+        reklame.kecamatan,
+        reklame.kelurahan,
+        reklame.tahun_pajak,
+        reklame.tgl_permohonan,
+        reklame.sudut_pandang,
+        reklame.nama_jalan,
+        reklame.nomor_jalan,
+        reklame.detail_lokasi,
+        reklame.panjang_reklame,
+        reklame.lebar_reklame,
+        reklame.luas_reklame,
+        reklame.tinggi_reklame,
+        reklame.teks,
+        reklame.no_formulir,
+        reklame.status_pengajuan,
+        reklame.status,
+        data_survey.tanggal_survey,
+        data_survey.berita_acara,
+        data_survey.gambar,
+        data_survey.id_survey
+        from reklame inner join user on reklame.id_user = user.iduser INNER JOIN jenis_reklame ON reklame.id_jenis_reklame = jenis_reklame.id_jenis_reklame INNER JOIN letak_reklame ON reklame.id_letak_reklame = letak_reklame.id_letak_reklame INNER JOIN lokasi_penempatan ON reklame.id_lokasi_penempatan = lokasi_penempatan.id_lokasi INNER JOIN status_tanah ON reklame.id_status_tanah = status_tanah.id_status INNER JOIN jenis_produk ON reklame.id_jenis_produk = jenis_produk.id_jenis_produk INNER JOIN data_survey ON reklame.id_reklame = data_survey.id_reklame WHERE data_survey.id_survey = ?"), [$request->input('id_survey')]);
+
+        if ($data == null) {
+            return response()->json(['result' => 'failed', 'data' => $data]);
+        } else {
+            return response()->json(['result' => 'success', 'data' => $data]);
+        }
+    }
+
+    public function dataSurvey(){
+        $data = DB::select(DB::raw('SELECT data_survey.id_survey,reklame.no_formulir, reklame.tahun_pendirian, reklame.status, data_survey.id_petugas, data_survey.tanggal_survey, data_survey.berita_acara, data_survey.gambar FROM data_survey INNER JOIN reklame ON data_survey.id_reklame = reklame.id_reklame'));
+
+        if ($data == null) {
+            return response()->json(['result' => 'failed', 'data' => $data]);
+        } else {
+            return response()->json(['result' => 'success', 'data' => $data]);
+        }
+    }
+
+    public function showImageReklame(Request $request){
+        $image = DB::table('data_survey')->select('gambar')->where('id_survey', $request->input('id_survey'))->first();
+
+        //return response()->download(public_path('data_file/'.$image->{'nama_berkas'}));
+        
+        return response()->json(['result'=>'success','data'=>'http://localhost/eReklame//eReklame//public//data_file/'.$image->{'gambar'}]);
+    }
 }

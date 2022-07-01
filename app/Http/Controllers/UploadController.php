@@ -140,8 +140,9 @@ class UploadController extends Controller
 
     public function downloadBerkas(Request $request){
         $image = DB::table('berkas_upload_berkas_digital')->select('nama_berkas')->where('id_upload', $request->input('id_upload'))->first();
-        
-        return response()->download(public_path('data_file/'.$image->{'nama_berkas'}));
 
+        //return response()->download(public_path('data_file/'.$image->{'nama_berkas'}));
+
+        return response()->json(['result'=>'success','data'=>public_path('data_file/'.$image->{'nama_berkas'})]);
     }
 }
