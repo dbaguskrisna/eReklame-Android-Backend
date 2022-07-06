@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 
+use function PHPUnit\Framework\isNull;
+
 class ReklameController extends Controller
 {
     /**
@@ -171,7 +173,9 @@ class ReklameController extends Controller
         reklame.teks,
         reklame.no_formulir,
         reklame.status_pengajuan,
-        reklame.status from reklame inner join user on reklame.id_user = user.iduser INNER JOIN jenis_reklame ON reklame.id_jenis_reklame = jenis_reklame.id_jenis_reklame INNER JOIN letak_reklame ON reklame.id_letak_reklame = letak_reklame.id_letak_reklame INNER JOIN lokasi_penempatan ON reklame.id_lokasi_penempatan = lokasi_penempatan.id_lokasi INNER JOIN status_tanah ON reklame.id_status_tanah = status_tanah.id_status INNER JOIN jenis_produk ON reklame.id_jenis_produk = jenis_produk.id_jenis_produk WHERE reklame.id_reklame = ?"), [$request->input('id_reklame')]);
+        reklame.status,
+        reklame.alasan
+        from reklame inner join user on reklame.id_user = user.iduser INNER JOIN jenis_reklame ON reklame.id_jenis_reklame = jenis_reklame.id_jenis_reklame INNER JOIN letak_reklame ON reklame.id_letak_reklame = letak_reklame.id_letak_reklame INNER JOIN lokasi_penempatan ON reklame.id_lokasi_penempatan = lokasi_penempatan.id_lokasi INNER JOIN status_tanah ON reklame.id_status_tanah = status_tanah.id_status INNER JOIN jenis_produk ON reklame.id_jenis_produk = jenis_produk.id_jenis_produk WHERE reklame.id_reklame = ?"), [$request->input('id_reklame')]);
 
         if ($data == null) {
             return response()->json(['result' => 'failed', 'data' => $data]);
@@ -342,12 +346,17 @@ class ReklameController extends Controller
 
     public function changeStatus(Request $request)
     {
-        $data = DB::table('reklame')->where('id_reklame', $request->input('id_reklame'))->update(['status_pengajuan' => '1']);
-
-        if ($data == null) {
-            return response()->json(['result' => 'failed', 'data' => $request->input('id_reklame')]);
+        $checkDocument = DB::select(DB::raw("select id_reklame from berkas_upload_berkas_digital WHERE id_reklame = ?"), [$request->input('id_reklame')]);
+        
+        if($checkDocument == null){
+            return response()->json(['result' => 'failed', 'data' => $checkDocument]);
         } else {
-            return response()->json(['result' => 'success', 'data' => $request->input('id_reklame')]);
+            $data = DB::table('reklame')->where('id_reklame', $request->input('id_reklame'))->update(['status_pengajuan' => '1']);
+                if ($data == null) {
+                    return response()->json(['result' => 'failed', 'data' => $request->input('id_reklame')]);
+                } else {
+                    return response()->json(['result' => 'success', 'data' => $request->input('id_reklame')]);
+                }
         }
     }
 
@@ -364,7 +373,7 @@ class ReklameController extends Controller
 
     public function changeStatusBerkasKurang(Request $request)
     {
-        $data = DB::table('reklame')->where('id_reklame', $request->input('id_reklame'))->update(['status_pengajuan' => '3']);
+        $data = DB::table('reklame')->where('id_reklame', $request->input('id_reklame'))->update(['status_pengajuan' => '3','alasan' =>  $request->input('alasan')]);
 
         if ($data == null) {
             return response()->json(['result' => 'failed', 'data' => $request->input('id_reklame')]);
@@ -455,5 +464,26 @@ class ReklameController extends Controller
         //return response()->download(public_path('data_file/'.$image->{'nama_berkas'}));
         
         return response()->json(['result'=>'success','data'=>'http://localhost/eReklame//eReklame//public//data_file/'.$image->{'gambar'}]);
+    }
+
+    public function deleteDataSurvey(Request $request)
+    {
+        $data = DB::table('data_survey')->where('id_survey', $request->input('id_survey'))->delete();
+
+        if ($data == null) {
+            return response()->json(['result' => 'failed', 'data' => $request->input('id_survey')]);
+        } else {
+            return response()->json(['result' => 'success', 'data' => $request->input('id_survey')]);
+        }
+    }
+
+    public function getLastForm(){
+        $data = DB::select(DB::raw('SELECT reklame.no_formulir from reklame ORDER BY id_reklame DESC LIMIT 1'));
+
+        if ($data == null) {
+            return response()->json(['result' => 'failed', 'data' => $data]);
+        } else {
+            return response()->json(['result' => 'success', 'data' => $data]);
+        }
     }
 }
