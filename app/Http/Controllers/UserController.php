@@ -86,7 +86,7 @@ class UserController extends Controller
 
     public function login(Request $request){
         $userData=DB::select(DB::raw("select * from user where username=? and password=?"), [$request->input('username'),$request->input('password')]);
-        $data = DB::table('user')->where('username', $request->input('username'))->update(['token' => $request->input('token')]);
+        $data = DB::table('petugas_wastib')->where('username', $request->input('username'))->update(['token' => $request->input('token')]);
         if($userData == null && $data == null){
             return response()->json(['result'=>'failed','data'=>$userData]);
         } else {
@@ -102,6 +102,13 @@ class UserController extends Controller
             return response()->json(['result'=>'success','data'=>$user]);
         }
     }
+
+    public function readReklamePerpanjangan(Request $request){
+        $user=DB::select(DB::raw("SELECT reklame.id_reklame,reklame.no_formulir, DATEDIFF(tgl_berlaku_akhir, NOW()) AS daysdiff FROM reklame INNER JOIN user ON reklame.id_user = user.iduser WHERE user.username=? AND DATEDIFF(tgl_berlaku_akhir, NOW()) < 30"), [$request->input('username')]);
+        
+        return response()->json(['result'=>'success','data'=>$user]);
+    }
+    
 
     public function updatePassword(Request $request){
         $data = DB::table('user')
@@ -127,6 +134,7 @@ class UserController extends Controller
     
     public function loginPetugas(Request $request){
         $userData=DB::select(DB::raw("select * from petugas_wastib where username=? and password=?"), [$request->input('username'),$request->input('password')]);
+        $data = DB::table('user')->where('username', $request->input('username'))->update(['token' => $request->input('token')]);
 
         if($userData == null){
             return response()->json(['result'=>'failed','data'=>$userData]);

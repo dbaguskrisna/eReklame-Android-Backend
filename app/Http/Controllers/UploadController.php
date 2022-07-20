@@ -143,6 +143,6 @@ class UploadController extends Controller
 
         //return response()->download(public_path('data_file/'.$image->{'nama_berkas'}));
 
-        return response()->json(['result'=>'success','data'=>public_path('data_file/'.$image->{'nama_berkas'})]);
+        return response()->json(['result'=>'success','data'=>$image->{'nama_berkas'}]);
     }
 }
