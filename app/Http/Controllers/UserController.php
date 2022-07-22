@@ -86,7 +86,7 @@ class UserController extends Controller
 
     public function login(Request $request){
         $userData=DB::select(DB::raw("select * from user where username=? and password=?"), [$request->input('username'),$request->input('password')]);
-        $data = DB::table('petugas_wastib')->where('username', $request->input('username'))->update(['token' => $request->input('token')]);
+        $data = DB::table('petugas')->where('username', $request->input('username'))->update(['token' => $request->input('token')]);
         if($userData == null && $data == null){
             return response()->json(['result'=>'failed','data'=>$userData]);
         } else {
@@ -133,7 +133,7 @@ class UserController extends Controller
     }
     
     public function loginPetugas(Request $request){
-        $userData=DB::select(DB::raw("select * from petugas_wastib where username=? and password=?"), [$request->input('username'),$request->input('password')]);
+        $userData=DB::select(DB::raw("select * from petugas where username=? and password=?"), [$request->input('username'),$request->input('password')]);
         $data = DB::table('user')->where('username', $request->input('username'))->update(['token' => $request->input('token')]);
 
         if($userData == null){
@@ -144,7 +144,7 @@ class UserController extends Controller
     }
 
     public function readPetugasWastib(Request $request){
-        $userData=DB::select(DB::raw("select * from petugas_wastib where username=?"), [$request->input('username')]);
+        $userData=DB::select(DB::raw("select * from petugas where username=?"), [$request->input('username')]);
 
         if($userData == null){
             return response()->json(['result'=>'failed','data'=>$userData]);
@@ -154,7 +154,7 @@ class UserController extends Controller
     }
 
     public function updatePetugasWastib(Request $request){
-        $data = DB::table('petugas_wastib')
+        $data = DB::table('petugas')
               ->where('username', $request->input('username'))
               ->update(['nama_petugas' => $request->input('nama_petugas'), 'alamat' => $request->input('alamat'),'nomor_handphone' => $request->input('no_hp')]);
 

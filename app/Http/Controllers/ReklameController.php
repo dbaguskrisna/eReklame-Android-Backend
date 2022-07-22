@@ -383,7 +383,7 @@ class ReklameController extends Controller
 
     public function readToken(Request $request)
     {
-        $data = DB::select(DB::raw("SELECT token FROM `petugas_wastib` LIMIT 1"));
+        $data = DB::select(DB::raw("SELECT token FROM `petugas` LIMIT 1"));
 
         if ($data == null) {
             return response()->json(['result' => 'failed', 'data' => $data]);
@@ -587,10 +587,7 @@ class ReklameController extends Controller
     public function searchQuerry(Request $request){
         $search = $request->input('no_reklame');
   
-        $data = DB::table('history_xy')
-                    ->join('reklame','history_xy.id_reklame','=','reklame.id_reklame')
-                    ->where('reklame.no_formulir', 'LIKE', "%{$search}%")
-                    ->get();
+        $data = DB::select(DB::raw("select history_xy.id_history_xy,history_xy.id_reklame,history_xy.latitude,history_xy.longtitude,reklame.status,reklame.no_formulir,user.nama, reklame.status from history_xy INNER JOIN reklame ON history_xy.id_reklame = reklame.id_reklame INNER JOIN user ON reklame.id_user = user.iduser WHERE reklame.no_formulir LIKE '{$search}%'"));
 
         return response()->json(['result' => 'success', 'data' => $data]);
     }
@@ -599,7 +596,7 @@ class ReklameController extends Controller
         $search = $request->input('no_reklame');
         $username = $request->input('user');
         
-        $data = DB::select(DB::raw("select history_xy.id_history_xy,history_xy.id_reklame,history_xy.latitude,history_xy.longtitude,reklame.status,reklame.no_formulir,user.nama from history_xy INNER JOIN reklame ON history_xy.id_reklame = reklame.id_reklame INNER JOIN user ON reklame.id_user = user.iduser WHERE user.username = '{$username}' AND reklame.no_formulir LIKE '{$search}%'"));
+        $data = DB::select(DB::raw("select history_xy.id_history_xy,history_xy.id_reklame,history_xy.latitude,history_xy.longtitude,reklame.status,reklame.no_formulir,user.nama, reklame.status from history_xy INNER JOIN reklame ON history_xy.id_reklame = reklame.id_reklame INNER JOIN user ON reklame.id_user = user.iduser WHERE user.username = '{$username}' AND reklame.no_formulir LIKE '{$search}%'"));
 
         return response()->json(['result' => 'success', 'data' => $data]);
     }
