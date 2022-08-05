@@ -104,7 +104,7 @@ class UploadController extends Controller
         $tujuan_upload = 'data_file';
         $file->move($tujuan_upload,$nama_file);
      
-        $insert = DB::insert('insert into berkas_upload_berkas_digital (id_user,id_reklame,id_berkas,nama_berkas,status) values (?,?,?,?,?)',[$id_user,$request->id_reklame,$request->id_berkas,$nama_file,0]);
+        $insert = DB::insert('insert into upload_berkas (id_user,id_reklame,id_berkas,nama_berkas,status) values (?,?,?,?,?)',[$id_user,$request->id_reklame,$request->id_berkas,$nama_file,0]);
 
         // Gambar::create([
         //     'file' => $nama_file,
@@ -119,7 +119,7 @@ class UploadController extends Controller
     }
     
     public function readUploadData(Request $request){
-        $user=DB::select(DB::raw("select berkas_upload_berkas_digital.id_upload,berkas_upload_berkas_digital.id_user,berkas_upload_berkas_digital.id_reklame, berkas_upload_berkas_digital.id_berkas,berkas_upload_berkas_digital.nama_berkas,berkas_upload_berkas_digital.status, master_berkas.nama_berkas as jenis_berkas from berkas_upload_berkas_digital INNER JOIN master_berkas ON berkas_upload_berkas_digital.id_berkas=master_berkas.id_berkas where id_reklame=?"), [$request->input('id_reklame')]);
+        $user=DB::select(DB::raw("select upload_berkas.id_upload,upload_berkas.id_user,upload_berkas.id_reklame, upload_berkas.id_berkas,upload_berkas.nama_berkas,upload_berkas.status, master_berkas.nama_berkas as jenis_berkas from upload_berkas INNER JOIN master_berkas ON upload_berkas.id_berkas=master_berkas.id_berkas where id_reklame=?"), [$request->input('id_reklame')]);
 
         if($user == null){
             return response()->json(['result'=>'failed','data'=>$user]);
@@ -129,7 +129,7 @@ class UploadController extends Controller
     }
 
     public function deleteBerkas (Request $request){
-        $delete = DB::table('berkas_upload_berkas_digital')->where('id_upload', $request->input('id_upload'))->delete();
+        $delete = DB::table('upload_berkas')->where('id_upload', $request->input('id_upload'))->delete();
 
         if($delete == null){
             return response()->json(['result'=>'failed','data'=>$delete]);
@@ -139,7 +139,7 @@ class UploadController extends Controller
     }
 
     public function downloadBerkas(Request $request){
-        $image = DB::table('berkas_upload_berkas_digital')->select('nama_berkas')->where('id_upload', $request->input('id_upload'))->first();
+        $image = DB::table('upload_berkas')->select('nama_berkas')->where('id_upload', $request->input('id_upload'))->first();
 
         //return response()->download(public_path('data_file/'.$image->{'nama_berkas'}));
 

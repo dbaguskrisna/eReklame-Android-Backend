@@ -134,9 +134,9 @@ class UserController extends Controller
     
     public function loginPetugas(Request $request){
         $userData=DB::select(DB::raw("select * from petugas where username=? and password=?"), [$request->input('username'),$request->input('password')]);
-        $data = DB::table('user')->where('username', $request->input('username'))->update(['token' => $request->input('token')]);
+        $data = DB::table('petugas')->where('username', $request->input('username'))->update(['token' => $request->input('token')]);
 
-        if($userData == null){
+        if($userData == null && $data == null){
             return response()->json(['result'=>'failed','data'=>$userData]);
         } else {
             return response()->json(['result'=>'success','data'=>$userData]);
@@ -166,4 +166,5 @@ class UserController extends Controller
     }
 
     
+
 }

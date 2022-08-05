@@ -43,7 +43,7 @@ class ReklameController extends Controller
         $str = json_encode($data[0]);
         $id_reklame = (int) filter_var($str, FILTER_SANITIZE_NUMBER_INT);
 
-        $insertCoordinate = DB::insert('insert into history_xy (id_reklame,latitude,longtitude,status) values (?, ?, ?, ?)', [$id_reklame, $request->input('latitude'), $request->input('longtitude'), 0]);
+        $insertCoordinate = DB::insert('insert into titik_lokasi (id_reklame,latitude,longtitude) values (?, ?, ?)', [$id_reklame, $request->input('latitude'), $request->input('longtitude')]);
 
         if ($insertCoordinate == null) {
             return response()->json(['result' => 'failed', 'data_insert_reklame' => $insert, 'data_insert_coordinate' => $insertCoordinate]);
@@ -123,7 +123,7 @@ class ReklameController extends Controller
         reklame.teks,
         reklame.no_formulir,
         reklame.status_pengajuan,
-        reklame.status from reklame inner join user on reklame.id_user = user.iduser WHERE user.username = ?"), [$request->input('user')]);
+        reklame.status from reklame inner join user on reklame.id_user = user.iduser WHERE user.username = ? ORDER BY  reklame.id_reklame DESC"), [$request->input('user')]);
 
         if ($data == null) {
             return response()->json(['result' => 'failed', 'data' => $data]);
@@ -223,7 +223,7 @@ class ReklameController extends Controller
 
     public function showMaps(Request $request)
     {
-        $data = DB::select(DB::raw("select history_xy.id_history_xy,history_xy.id_reklame,history_xy.latitude,history_xy.longtitude,reklame.status,reklame.no_formulir,user.nama from history_xy INNER JOIN reklame ON history_xy.id_reklame = reklame.id_reklame INNER JOIN user ON reklame.id_user = user.iduser WHERE user.username = ?"), [$request->input('user')]);
+        $data = DB::select(DB::raw("select titik_lokasi.id_titik_lokasi,titik_lokasi.id_reklame,titik_lokasi.latitude,titik_lokasi.longtitude,reklame.status,reklame.no_formulir,user.nama from titik_lokasi INNER JOIN reklame ON titik_lokasi.id_reklame = reklame.id_reklame INNER JOIN user ON reklame.id_user = user.iduser WHERE user.username = ?"), [$request->input('user')]);
 
         if ($data == null) {
             return response()->json(['result' => 'failed', 'data' => $data]);
@@ -234,7 +234,7 @@ class ReklameController extends Controller
 
     public function showReklamePetugas(Request $request)
     {
-        $data = DB::select(DB::raw("select history_xy.id_history_xy,history_xy.id_reklame,history_xy.status,history_xy.latitude,history_xy.longtitude,reklame.no_formulir,user.nama from history_xy INNER JOIN reklame ON history_xy.id_reklame = reklame.id_reklame INNER JOIN user ON reklame.id_user = user.iduser"), [$request->input('user')]);
+        $data = DB::select(DB::raw("select titik_lokasi.id_titik_lokasi,titik_lokasi.id_reklame,titik_lokasi.status,titik_lokasi.latitude,titik_lokasi.longtitude,reklame.no_formulir,user.nama from titik_lokasi INNER JOIN reklame ON titik_lokasi.id_reklame = reklame.id_reklame INNER JOIN user ON reklame.id_user = user.iduser"), [$request->input('user')]);
 
         if ($data == null) {
             return response()->json(['result' => 'failed', 'data' => $data]);
@@ -429,7 +429,7 @@ class ReklameController extends Controller
 
     public function changeStatus(Request $request)
     {
-        $checkDocument = DB::select(DB::raw("select id_reklame from berkas_upload_berkas_digital WHERE id_reklame = ?"), [$request->input('id_reklame')]);
+        $checkDocument = DB::select(DB::raw("select id_reklame from upload_berkas WHERE id_reklame = ?"), [$request->input('id_reklame')]);
         
         if($checkDocument == null){
             return response()->json(['result' => 'failed', 'data' => $checkDocument]);
@@ -471,7 +471,7 @@ class ReklameController extends Controller
 
     public function deleteReklame(Request $request)
     {
-        $dataHistory = DB::table('history_xy')->where('id_reklame', $request->input('id_reklame'))->delete();
+        $dataHistory = DB::table('titik_lokasi')->where('id_reklame', $request->input('id_reklame'))->delete();
         $dataReklame  = DB::table('reklame')->where('id_reklame', $request->input('id_reklame'))->delete();
 
         if ($dataHistory == null && $dataReklame == null) {
@@ -587,7 +587,7 @@ class ReklameController extends Controller
     public function searchQuerry(Request $request){
         $search = $request->input('no_reklame');
   
-        $data = DB::select(DB::raw("select history_xy.id_history_xy,history_xy.id_reklame,history_xy.latitude,history_xy.longtitude,reklame.status,reklame.no_formulir,user.nama, reklame.status from history_xy INNER JOIN reklame ON history_xy.id_reklame = reklame.id_reklame INNER JOIN user ON reklame.id_user = user.iduser WHERE reklame.no_formulir LIKE '{$search}%'"));
+        $data = DB::select(DB::raw("select titik_lokasi.id_titik_lokasi,titik_lokasi.id_reklame,titik_lokasi.latitude,titik_lokasi.longtitude,reklame.status,reklame.no_formulir,reklame.tgl_berlaku_awal,reklame.tgl_berlaku_akhir from titik_lokasi INNER JOIN reklame ON titik_lokasi.id_reklame = reklame.id_reklame INNER JOIN user ON reklame.id_user = user.iduser WHERE reklame.no_formulir LIKE '{$search}%'"));
 
         return response()->json(['result' => 'success', 'data' => $data]);
     }
@@ -596,7 +596,7 @@ class ReklameController extends Controller
         $search = $request->input('no_reklame');
         $username = $request->input('user');
         
-        $data = DB::select(DB::raw("select history_xy.id_history_xy,history_xy.id_reklame,history_xy.latitude,history_xy.longtitude,reklame.status,reklame.no_formulir,user.nama, reklame.status from history_xy INNER JOIN reklame ON history_xy.id_reklame = reklame.id_reklame INNER JOIN user ON reklame.id_user = user.iduser WHERE user.username = '{$username}' AND reklame.no_formulir LIKE '{$search}%'"));
+        $data = DB::select(DB::raw("select titik_lokasi.id_titik_lokasi,titik_lokasi.id_reklame,titik_lokasi.latitude,titik_lokasi.longtitude,reklame.status,reklame.no_formulir,user.nama,reklame.tgl_berlaku_awal,reklame.tgl_berlaku_akhir from titik_lokasi INNER JOIN reklame ON titik_lokasi.id_reklame = reklame.id_reklame INNER JOIN user ON reklame.id_user = user.iduser WHERE user.username = '{$username}' AND reklame.no_formulir LIKE '{$search}%'"));
 
         return response()->json(['result' => 'success', 'data' => $data]);
     }
