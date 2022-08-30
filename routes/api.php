@@ -39,6 +39,7 @@ Route::post('/read_reklame_kurang',[ReklameController::class,'readBerkasKurang']
 Route::post('/read_token',[ReklameController::class,'readToken']);
 Route::post('/read_reklame',[ReklameController::class,'readReklame']);
 Route::post('/read_reklame_aktif',[ReklameController::class,'readReklameAktif']);
+Route::post('/read_reklame_tidak_aktif',[ReklameController::class,'readReklameTidakAktif']);
 Route::post('/read_reklame_detail',[ReklameController::class,'readDetailReklame']);
 Route::post('/read_user',[UserController::class,'readUser']);
 Route::post('/read_reklame_perpanjangan',[UserController::class,'readReklamePerpanjangan']);
@@ -46,6 +47,7 @@ Route::post('/detail_survey_reklame',[ReklameController::class,'detailDataSurvey
 Route::post('/read_data_survey',[ReklameController::class,'dataSurvey']);
 Route::post('/show_image_survey',[ReklameController::class,'showImageReklame']);
 Route::post('/get_last_form',[ReklameController::class,'getLastForm']);
+Route::post('/read_username',[ReklameController::class,'readUsername']);
 
 //Update API
 Route::put('/update_status_reklame',[ReklameController::class,'changeStatus']);

@@ -85,8 +85,8 @@ class UserController extends Controller
     }
 
     public function login(Request $request){
-        $userData=DB::select(DB::raw("select * from user where username=? and password=?"), [$request->input('username'),$request->input('password')]);
-        $data = DB::table('petugas')->where('username', $request->input('username'))->update(['token' => $request->input('token')]);
+        $userData=DB::select(DB::raw("select * from user where email=? and password=?"), [$request->input('email'),$request->input('password')]);
+        $data = DB::table('user')->where('email', $request->input('email'))->update(['token' => $request->input('token')]);
         if($userData == null && $data == null){
             return response()->json(['result'=>'failed','data'=>$userData]);
         } else {
@@ -95,7 +95,7 @@ class UserController extends Controller
     }
 
     public function readUser(Request $request){
-        $user=DB::select(DB::raw("select * from user where username=?"), [$request->input('username')]);
+        $user=DB::select(DB::raw("select * from user where email=?"), [$request->input('username')]);
         if($user == null){
             return response()->json(['result'=>'failed','data'=>$user]);
         } else {
@@ -104,31 +104,30 @@ class UserController extends Controller
     }
 
     public function readReklamePerpanjangan(Request $request){
-        $user=DB::select(DB::raw("SELECT reklame.id_reklame,reklame.no_formulir, DATEDIFF(tgl_berlaku_akhir, NOW()) AS daysdiff FROM reklame INNER JOIN user ON reklame.id_user = user.iduser WHERE user.username=? AND DATEDIFF(tgl_berlaku_akhir, NOW()) < 30"), [$request->input('username')]);
+        $user=DB::select(DB::raw("SELECT reklame.id_reklame,reklame.no_formulir, DATEDIFF(tgl_berlaku_akhir, NOW()) AS daysdiff FROM reklame INNER JOIN user ON reklame.id_user = user.iduser WHERE user.email='dbaguskrisna@gmail.com' AND DATEDIFF(tgl_berlaku_akhir, NOW()) < 30 AND DATEDIFF(tgl_berlaku_akhir, NOW()) >= 0"), [$request->input('email')]);
         
         return response()->json(['result'=>'success','data'=>$user]);
     }
-    
 
     public function updatePassword(Request $request){
         $data = DB::table('user')
-              ->where('username', $request->input('username'))
+              ->where('email', $request->input('email'))
               ->update(['password' => $request->input('password')]);
         if($data == null){
-            return response()->json(['result'=>'failed','data'=> $request->input('username')]);
+            return response()->json(['result'=>'failed','data'=> $request->input('email')]);
         } else {
-            return response()->json(['result'=>'success','data'=> $request->input('username')]);
+            return response()->json(['result'=>'success','data'=> $request->input('email')]);
         }
     }
 
     public function updateUser(Request $request){
         $data = DB::table('user')
-              ->where('username', $request->input('username'))
+              ->where('email', $request->input('email'))
               ->update(['nama' => $request->input('nama_lengkap'), 'alamat' => $request->input('alamat'),'no_hp' => $request->input('no_hp'),'jabatan' => $request->input('jabatan'),'nama_perusahaan' => $request->input('nama_perusahaan'),'alamat_perusahaan' => $request->input('alamat_perusahaan'),'no_telp_perusahaan' => $request->input('no_telp_perusahaan'),'npwpd' => $request->input('npwpd')]);
         if($data == null){
-            return response()->json(['result'=>'failed','data'=> $request->input('username')]);
+            return response()->json(['result'=>'failed','data'=> $request->input('email')]);
         } else {
-            return response()->json(['result'=>'success','data'=> $request->input('username')]);
+            return response()->json(['result'=>'success','data'=> $request->input('email')]);
         }
     }
     
@@ -164,7 +163,5 @@ class UserController extends Controller
             return response()->json(['result'=>'success','data'=>  $data]);
         }
     }
-
-    
 
 }

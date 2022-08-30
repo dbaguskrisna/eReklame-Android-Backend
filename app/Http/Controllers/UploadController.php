@@ -86,7 +86,7 @@ class UploadController extends Controller
 	public function proses_upload(Request $request){
         $this->validate($request, [
             'file' => 'required|file|mimes:jpg,jpeg,png,pdf,xls,xlsx,txt,ppt,pptx,dwg',
-            'username' => 'required',
+            'email' => 'required',
             'id_reklame' => 'required',
             'id_berkas' => 'required'
         ]);
@@ -96,7 +96,7 @@ class UploadController extends Controller
      
         $nama_file = time()."_".$file->getClientOriginalName();
      
-        $data = DB::select(DB::raw("select iduser from user where username=?"), [$request->username]);
+        $data = DB::select(DB::raw("select iduser from user where email=?"), [$request->email]);
         $str = json_encode($data[0]);
         $id_user = (int) filter_var($str, FILTER_SANITIZE_NUMBER_INT);
 
@@ -104,12 +104,7 @@ class UploadController extends Controller
         $tujuan_upload = 'data_file';
         $file->move($tujuan_upload,$nama_file);
      
-        $insert = DB::insert('insert into upload_berkas (id_user,id_reklame,id_berkas,nama_berkas,status) values (?,?,?,?,?)',[$id_user,$request->id_reklame,$request->id_berkas,$nama_file,0]);
-
-        // Gambar::create([
-        //     'file' => $nama_file,
-        //     'keterangan' => $request->keterangan,
-        // ]);
+        $insert = DB::insert('insert into upload_berkas (id_user,id_reklame,id_berkas,nama_berkas) values (?,?,?,?)',[$id_user,$request->id_reklame,$request->id_berkas,$nama_file]);
         
         if ($insert == null) {
             return response()->json(['result' => 'failed', 'data' => $request->input('id_reklame')]);
@@ -119,7 +114,7 @@ class UploadController extends Controller
     }
     
     public function readUploadData(Request $request){
-        $user=DB::select(DB::raw("select upload_berkas.id_upload,upload_berkas.id_user,upload_berkas.id_reklame, upload_berkas.id_berkas,upload_berkas.nama_berkas,upload_berkas.status, master_berkas.nama_berkas as jenis_berkas from upload_berkas INNER JOIN master_berkas ON upload_berkas.id_berkas=master_berkas.id_berkas where id_reklame=?"), [$request->input('id_reklame')]);
+        $user=DB::select(DB::raw("select upload_berkas.id_upload,upload_berkas.id_user,upload_berkas.id_reklame, upload_berkas.id_berkas,upload_berkas.nama_berkas, master_berkas.nama_berkas as jenis_berkas from upload_berkas INNER JOIN master_berkas ON upload_berkas.id_berkas=master_berkas.id_berkas where id_reklame=?"), [$request->input('id_reklame')]);
 
         if($user == null){
             return response()->json(['result'=>'failed','data'=>$user]);

@@ -37,7 +37,7 @@ class ReklameController extends Controller
      */
     public function store(Request $request)
     {
-        $insert = DB::insert('insert into reklame (id_jenis_reklame,id_user,id_jenis_produk,id_lokasi_penempatan,id_status_tanah,id_letak_reklame,tahun_pendirian,kecamatan,kelurahan,tahun_pajak,tgl_permohonan,sudut_pandang,nama_jalan,nomor_jalan,detail_lokasi,panjang_reklame,lebar_reklame,luas_reklame,tinggi_reklame,teks,no_formulir,status_pengajuan,status) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)', [$request->input('id_jenis_reklame'), $request->input('id_user'), $request->input('id_jenis_produk'), $request->input('id_lokasi_penempatan'), $request->input('id_status_tanah'), $request->input('id_letak_reklame'), $request->input('tahun_pendirian'), $request->input('kecamatan'), $request->input('kelurahan'), $request->input('tahun_pajak'), $request->input('tgl_permohonan'), $request->input('sudut_pandang'), $request->input('nama_jalan'), $request->input('nomor_jalan'), $request->input('detail_lokasi'), $request->input('panjang_reklame'), $request->input('lebar_reklame'), $request->input('luas_reklame'), $request->input('tinggi_reklame'), $request->input('teks'), $request->input('no_formulir'), $request->input('status_pengajuan'), $request->input('status')]);
+        $insert = DB::insert('insert into reklame (id_jenis_reklame,id_user,id_jenis_produk,id_lokasi_penempatan,id_status_tanah,id_letak_reklame,tahun_pendirian,kecamatan,kelurahan,tahun_pajak,tgl_permohonan,sudut_pandang,nama_jalan,nomor_jalan,detail_lokasi,panjang_reklame,lebar_reklame,luas_reklame,tinggi_reklame,teks,no_formulir,status_pengajuan,status,tgl_berlaku_awal,tgl_berlaku_akhir) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)', [$request->input('id_jenis_reklame'), $request->input('id_user'), $request->input('id_jenis_produk'), $request->input('id_lokasi_penempatan'), $request->input('id_status_tanah'), $request->input('id_letak_reklame'), $request->input('tahun_pendirian'), $request->input('kecamatan'), $request->input('kelurahan'), $request->input('tahun_pajak'), $request->input('tgl_permohonan'), $request->input('sudut_pandang'), $request->input('nama_jalan'), $request->input('nomor_jalan'), $request->input('detail_lokasi'), $request->input('panjang_reklame'), $request->input('lebar_reklame'), $request->input('luas_reklame'), $request->input('tinggi_reklame'), $request->input('teks'), $request->input('no_formulir'), $request->input('status_pengajuan'), $request->input('status'), $request->input('tgl_berlaku_awal'), $request->input('tgl_berlaku_akhir')]);
 
         $data = DB::select(DB::raw("select id_reklame from reklame where no_formulir=?"), [$request->input('no_formulir')]);
         $str = json_encode($data[0]);
@@ -99,31 +99,7 @@ class ReklameController extends Controller
 
     public function readReklame(Request $request)
     {
-        $data = DB::select(DB::raw("select 
-        reklame.id_reklame,
-        reklame.id_jenis_reklame,
-        reklame.id_user,
-        reklame.id_jenis_produk,
-        reklame.id_lokasi_penempatan,
-        reklame.id_status_tanah,
-        reklame.id_letak_reklame,
-        reklame.tahun_pendirian,
-        reklame.kecamatan,
-        reklame.kelurahan,
-        reklame.tahun_pajak,
-        reklame.tgl_permohonan,
-        reklame.sudut_pandang,
-        reklame.nama_jalan,
-        reklame.nomor_jalan,
-        reklame.detail_lokasi,
-        reklame.panjang_reklame,
-        reklame.lebar_reklame,
-        reklame.luas_reklame,
-        reklame.tinggi_reklame,
-        reklame.teks,
-        reklame.no_formulir,
-        reklame.status_pengajuan,
-        reklame.status from reklame inner join user on reklame.id_user = user.iduser WHERE user.username = ? ORDER BY  reklame.id_reklame DESC"), [$request->input('user')]);
+        $data = DB::select(DB::raw("select reklame.id_reklame, reklame.id_jenis_reklame, reklame.id_user, reklame.id_jenis_produk, reklame.id_lokasi_penempatan, reklame.id_status_tanah, reklame.id_letak_reklame, reklame.tahun_pendirian, reklame.kecamatan, reklame.kelurahan, reklame.tahun_pajak, reklame.tgl_permohonan, reklame.sudut_pandang, reklame.nama_jalan, reklame.nomor_jalan, reklame.detail_lokasi, reklame.panjang_reklame, reklame.lebar_reklame, reklame.luas_reklame, reklame.tinggi_reklame, reklame.teks, reklame.no_formulir, reklame.status_pengajuan, reklame.status from reklame inner join user on reklame.id_user = user.iduser WHERE user.email = ? AND reklame.status_pengajuan = 0 OR reklame.status_pengajuan = 3 ORDER BY reklame.id_reklame DESC"), [$request->input('email')]);
 
         if ($data == null) {
             return response()->json(['result' => 'failed', 'data' => $data]);
@@ -158,7 +134,42 @@ class ReklameController extends Controller
         reklame.teks,
         reklame.no_formulir,
         reklame.status_pengajuan,
-        reklame.status, reklame.tgl_berlaku_awal,reklame.tgl_berlaku_akhir from reklame inner join user on reklame.id_user = user.iduser WHERE user.username = ? AND reklame.status = 1"), [$request->input('user')]);
+        reklame.status, reklame.tgl_berlaku_awal,reklame.tgl_berlaku_akhir from reklame inner join user on reklame.id_user = user.iduser WHERE user.email = ? AND reklame.status = 1"), [$request->input('email')]);
+
+        if ($data == null) {
+            return response()->json(['result' => 'failed', 'data' => $data]);
+        } else {
+            return response()->json(['result' => 'success', 'data' => $data]);
+        }
+    }
+
+    public function readReklameTidakAktif(Request $request)
+    {
+        $data = DB::select(DB::raw("select 
+        reklame.id_reklame,
+        reklame.id_jenis_reklame,
+        reklame.id_user,
+        reklame.id_jenis_produk,
+        reklame.id_lokasi_penempatan,
+        reklame.id_status_tanah,
+        reklame.id_letak_reklame,
+        reklame.tahun_pendirian,
+        reklame.kecamatan,
+        reklame.kelurahan,
+        reklame.tahun_pajak,
+        reklame.tgl_permohonan,
+        reklame.sudut_pandang,
+        reklame.nama_jalan,
+        reklame.nomor_jalan,
+        reklame.detail_lokasi,
+        reklame.panjang_reklame,
+        reklame.lebar_reklame,
+        reklame.luas_reklame,
+        reklame.tinggi_reklame,
+        reklame.teks,
+        reklame.no_formulir,
+        reklame.status_pengajuan,
+        reklame.status, reklame.tgl_berlaku_awal,reklame.tgl_berlaku_akhir from reklame inner join user on reklame.id_user = user.iduser WHERE user.email = ? AND reklame.status = 2"), [$request->input('email')]);
 
         if ($data == null) {
             return response()->json(['result' => 'failed', 'data' => $data]);
@@ -302,7 +313,7 @@ class ReklameController extends Controller
         reklame.teks,
         reklame.no_formulir,
         reklame.status_pengajuan,
-        reklame.status from reklame INNER JOIN user ON reklame.id_user = user.iduser WHERE reklame.status = 2"));
+        reklame.status from reklame INNER JOIN user ON reklame.id_user = user.iduser WHERE reklame.status = 2 ORDER BY reklame.id_reklame DESC"));
         
         if ($data == null) {
             return response()->json(['result' => 'failed', 'data' => $data]);
@@ -337,7 +348,7 @@ class ReklameController extends Controller
         reklame.teks,
         reklame.no_formulir,
         reklame.status_pengajuan,
-        reklame.status from reklame INNER JOIN user ON reklame.id_user = user.iduser WHERE reklame.status_pengajuan = 1"));
+        reklame.status from reklame INNER JOIN user ON reklame.id_user = user.iduser WHERE reklame.status_pengajuan = 1 ORDER BY reklame.id_reklame DESC"));
         
         if ($data == null) {
             return response()->json(['result' => 'failed', 'data' => $data]);
@@ -372,7 +383,7 @@ class ReklameController extends Controller
         reklame.teks,
         reklame.no_formulir,
         reklame.status_pengajuan,
-        reklame.status from reklame WHERE reklame.status_pengajuan = 2 AND reklame.status = 1"));
+        reklame.status from reklame WHERE reklame.status_pengajuan = 2 AND reklame.status = 1 ORDER BY reklame.id_reklame DESC"));
 
         if ($data == null) {
             return response()->json(['result' => 'failed', 'data' => $data]);
@@ -418,7 +429,7 @@ class ReklameController extends Controller
         reklame.teks,
         reklame.no_formulir,
         reklame.status_pengajuan,
-        reklame.status from reklame WHERE reklame.status_pengajuan = 3"));
+        reklame.status from reklame WHERE reklame.status_pengajuan = 3 ORDER BY reklame.id_reklame DESC"));
 
         if ($data == null) {
             return response()->json(['result' => 'failed', 'data' => $data]);
@@ -594,9 +605,15 @@ class ReklameController extends Controller
 
     public function searchQuerryUser(Request $request){
         $search = $request->input('no_reklame');
-        $username = $request->input('user');
+        $email = $request->input('email');
         
-        $data = DB::select(DB::raw("select titik_lokasi.id_titik_lokasi,titik_lokasi.id_reklame,titik_lokasi.latitude,titik_lokasi.longtitude,reklame.status,reklame.no_formulir,user.nama,reklame.tgl_berlaku_awal,reklame.tgl_berlaku_akhir from titik_lokasi INNER JOIN reklame ON titik_lokasi.id_reklame = reklame.id_reklame INNER JOIN user ON reklame.id_user = user.iduser WHERE user.username = '{$username}' AND reklame.no_formulir LIKE '{$search}%'"));
+        $data = DB::select(DB::raw("select titik_lokasi.id_titik_lokasi,titik_lokasi.id_reklame,titik_lokasi.latitude,titik_lokasi.longtitude,reklame.status,reklame.no_formulir,user.nama,reklame.tgl_berlaku_awal,reklame.tgl_berlaku_akhir from titik_lokasi INNER JOIN reklame ON titik_lokasi.id_reklame = reklame.id_reklame INNER JOIN user ON reklame.id_user = user.iduser WHERE user.email = '{$email}' AND reklame.no_formulir LIKE '{$search}%'"));
+
+        return response()->json(['result' => 'success', 'data' => $data]);
+    }
+
+    public function readUsername(Request $request){
+        $data = DB::select(DB::raw("select nama from user where email = ?"),[$request->input('email')]);
 
         return response()->json(['result' => 'success', 'data' => $data]);
     }
