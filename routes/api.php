@@ -48,6 +48,7 @@ Route::post('/read_data_survey',[ReklameController::class,'dataSurvey']);
 Route::post('/show_image_survey',[ReklameController::class,'showImageReklame']);
 Route::post('/get_last_form',[ReklameController::class,'getLastForm']);
 Route::post('/read_username',[ReklameController::class,'readUsername']);
+Route::post('/read_alasan_reklame',[ReklameController::class,'readAlasan']);
 
 //Update API
 Route::put('/update_status_reklame',[ReklameController::class,'changeStatus']);

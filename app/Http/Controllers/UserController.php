@@ -34,7 +34,7 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        $insert = DB::insert('insert into user (nama,alamat,no_hp,jabatan,nama_perusahaan,alamat_perusahaan,no_telp_perusahaan,npwpd,email,password,username,token) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [$request->input('nama'),$request->input('alamat'),$request->input('noHP'),$request->input('jabatan'),$request->input('nama_perusahaan'),$request->input('alamat_perusahaan'),$request->input('no_telp_perusahaan'),$request->input('npwpd'),$request->input('email'),$request->input('password'),$request->input('username'),$request->input('token')]);
+        $insert = DB::insert('insert into user (nama,alamat,no_hp,jabatan,nama_perusahaan,alamat_perusahaan,no_telp_perusahaan,npwpd,email,password,token) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [$request->input('nama'),$request->input('alamat'),$request->input('noHP'),$request->input('jabatan'),$request->input('nama_perusahaan'),$request->input('alamat_perusahaan'),$request->input('no_telp_perusahaan'),$request->input('npwpd'),$request->input('email'),$request->input('password'),$request->input('token')]);
         
         return response()->json(['result'=>'success','data'=>$insert]);
     }
@@ -104,7 +104,7 @@ class UserController extends Controller
     }
 
     public function readReklamePerpanjangan(Request $request){
-        $user=DB::select(DB::raw("SELECT reklame.id_reklame,reklame.no_formulir, DATEDIFF(tgl_berlaku_akhir, NOW()) AS daysdiff FROM reklame INNER JOIN user ON reklame.id_user = user.iduser WHERE user.email='dbaguskrisna@gmail.com' AND DATEDIFF(tgl_berlaku_akhir, NOW()) < 30 AND DATEDIFF(tgl_berlaku_akhir, NOW()) >= 0"), [$request->input('email')]);
+        $user=DB::select(DB::raw("SELECT reklame.id_reklame,reklame.no_formulir, DATEDIFF(tgl_berlaku_akhir, NOW()) AS daysdiff FROM reklame INNER JOIN user ON reklame.id_user = user.iduser WHERE user.email=? AND DATEDIFF(tgl_berlaku_akhir, NOW()) < 30 AND DATEDIFF(tgl_berlaku_akhir, NOW()) >= 0"), [$request->input('email')]);
         
         return response()->json(['result'=>'success','data'=>$user]);
     }

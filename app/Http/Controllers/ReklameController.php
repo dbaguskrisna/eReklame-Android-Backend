@@ -586,8 +586,8 @@ class ReklameController extends Controller
     }
 
     public function cabutBerkas(Request $request){
-        $data = DB::table('reklame')->where('id_reklame', $request->input('id_reklame'))->update(['status' => '2']);
-
+        $data = DB::table('reklame')->where('id_reklame', $request->input('id_reklame'), )->update(['status' => '2', 'alasan' =>  $request->input('alasan')]);
+        
         if ($data == null) {
             return response()->json(['result' => 'failed', 'data' => $data]);
         } else {
@@ -616,5 +616,15 @@ class ReklameController extends Controller
         $data = DB::select(DB::raw("select nama from user where email = ?"),[$request->input('email')]);
 
         return response()->json(['result' => 'success', 'data' => $data]);
+    }
+
+    public function readAlasan(Request $request){
+        $userData=DB::select(DB::raw("select reklame.alasan from reklame where reklame.id_reklame =?"), [$request->input('id_reklame')]);
+
+        if($userData == null){
+            return response()->json(['result'=>'failed','data'=>$userData]);
+        } else {
+            return response()->json(['result'=>'success','data'=>$userData]);
+        }
     }
 }
