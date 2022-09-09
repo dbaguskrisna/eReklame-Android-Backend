@@ -56,6 +56,7 @@ Route::put('/update_status_reklame_belum_diverifikasi',[ReklameController::class
 Route::put('/update_status_reklame_berkas_kurang',[ReklameController::class,'changeStatusBerkasKurang']);
 Route::put('/update_password',[UserController::class,'updatePassword']);
 Route::put('/update_user',[UserController::class,'updateUser']);
+Route::put('/update_petugas',[UserController::class,'updatePetugas']);
 Route::put('/cabut_berkas',[ReklameController::class,'cabutBerkas']);
 
 //Delete 

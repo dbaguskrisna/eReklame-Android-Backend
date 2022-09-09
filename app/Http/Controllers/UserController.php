@@ -130,6 +130,17 @@ class UserController extends Controller
             return response()->json(['result'=>'success','data'=> $request->input('email')]);
         }
     }
+
+    public function updatePetugas(Request $request){
+        $data = DB::table('petugas')
+              ->where('username', $request->input('email'))
+              ->update(['nama_petugas' => $request->input('nama_petugas'), 'nomor_handphone' => $request->input('nomor_handphone'),'alamat' => $request->input('alamat')]);
+        if($data == null){
+            return response()->json(['result'=>'failed','data'=> $request->input('email')]);
+        } else {
+            return response()->json(['result'=>'success','data'=> $request->input('email')]);
+        }
+    }
     
     public function loginPetugas(Request $request){
         $userData=DB::select(DB::raw("select * from petugas where username=? and password=?"), [$request->input('username'),$request->input('password')]);

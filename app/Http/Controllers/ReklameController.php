@@ -547,7 +547,7 @@ class ReklameController extends Controller
     }
 
     public function dataSurvey(){
-        $data = DB::select(DB::raw('SELECT data_survey.id_survey,reklame.no_formulir, reklame.tahun_pendirian, reklame.status, data_survey.id_petugas, data_survey.tanggal_survey, data_survey.berita_acara, data_survey.gambar FROM data_survey INNER JOIN reklame ON data_survey.id_reklame = reklame.id_reklame'));
+        $data = DB::select(DB::raw('SELECT data_survey.id_survey,reklame.no_formulir, reklame.tahun_pendirian, reklame.status, data_survey.id_petugas, data_survey.tanggal_survey, data_survey.berita_acara, data_survey.gambar FROM data_survey INNER JOIN reklame ON data_survey.id_reklame = reklame.id_reklame ORDER BY data_survey.id_survey DESC'));
 
         if ($data == null) {
             return response()->json(['result' => 'failed', 'data' => $data]);
